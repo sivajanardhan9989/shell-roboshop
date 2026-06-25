@@ -30,17 +30,15 @@ VALIDATE(){
 cp mongo.repo /etc/yum.repos.d/mongo.repo
 VALIDATE $? "Adding Mongo repo"
 
-
-dnf install mongodb-org -y   &>> $LOGS_FILE
+dnf install mongodb-org -y &>> $LOGS_FILE
 VALIDATE $? "Installing MongoDB"
 
-systemctl enable mongod  --now mongod
-VALIDATE $? "Enabling MongoDB"
+systemctl enable --now mongod
+VALIDATE $? "Starting and enabling MongoDB"
 
+sed -i 's/127.0.0.1/0.0.0.0/g' /etc/mongod.conf
+VALIDATE $? "Allowing remote connections to MongoDB"
 
-sed -i 's/127.0.0.0/0.0.0.0/' /etc/mongod.conf &>> $LOGS_FILE
-VALIDATE $? "Updating MongoDB Config"
-
-systemctl restart mongod &>> $LOGS_FILE
+systemctl restart mongod
 VALIDATE $? "Restarting MongoDB"
 
